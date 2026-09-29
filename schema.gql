@@ -1,0 +1,248 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""A degree of the profile owner, awarded or expected."""
+type Education {
+  """Academic degree, e.g. "MSc"."""
+  degree: String!
+
+  """Faculty or department within the institution."""
+  faculty: String
+
+  """Field of study, e.g. "Computer Science"."""
+  fieldOfStudy: String!
+
+  """Year the degree was awarded or is expected to be."""
+  graduationYear: Int!
+
+  """Unique identifier of the degree."""
+  id: ID!
+
+  """University or school that awards the degree."""
+  institution: String!
+
+  """
+  Whether the degree is still to be awarded: true until its graduation year is over.
+  """
+  isExpected: Boolean!
+
+  """City the institution is in."""
+  location: String
+}
+
+"""When a job started and ended, and how long it lasted."""
+type EmploymentPeriod {
+  """
+  Duration in calendar months, counting the first and the last month (up to today for the current job).
+  """
+  durationInMonths: Int!
+
+  """Month the job ended, same convention; null for the current job."""
+  endDate: Date
+
+  """Whether this is the current job."""
+  isCurrent: Boolean!
+
+  """
+  Month the job started — the 1st of the month when only the month is known.
+  """
+  startDate: Date!
+}
+
+"""A job in the work history of the profile owner."""
+type Experience {
+  """Key achievements in display order."""
+  achievements: [String!]!
+
+  """Employer name."""
+  company: String!
+
+  """What the company or the team does."""
+  description: String
+
+  """Unique identifier of the job."""
+  id: ID!
+
+  """Where the job is based, e.g. "Moscow (remote)"."""
+  location: String
+
+  """When the job started and ended, and how long it lasted."""
+  period: EmploymentPeriod!
+
+  """Job title."""
+  position: String!
+
+  """Technologies used at this job."""
+  technologies: [Skill!]!
+}
+
+"""Kind of resource a profile link points to."""
+enum LinkType {
+  """E-mail address (a mailto: link)."""
+  EMAIL
+
+  """GitHub profile."""
+  GITHUB
+
+  """LinkedIn profile."""
+  LINKEDIN
+
+  """Any other professional resource."""
+  OTHER
+
+  """Telegram account."""
+  TELEGRAM
+
+  """Personal website or blog."""
+  WEBSITE
+}
+
+"""The business-card owner: who they are and how to reach them."""
+type Profile {
+  """Short introduction: what the owner does and values."""
+  description: String!
+
+  """Education, most recent degree first."""
+  education: [Education!]!
+
+  """Work history, most recent job first."""
+  experience: [Experience!]!
+
+  """
+  One-line professional title, e.g. "Backend developer · Node.js / TypeScript".
+  """
+  headline: String!
+
+  """Unique identifier of the profile."""
+  id: ID!
+
+  """
+  Spoken languages with proficiency, e.g. "English — B2", in display order.
+  """
+  languages: [String!]!
+
+  """
+  Links to GitHub, LinkedIn and other professional resources, in display order.
+  """
+  links: [ProfileLink!]!
+
+  """Where the owner is based."""
+  location: String
+
+  """Full name of the owner."""
+  name: String!
+
+  """Projects in display order."""
+  projects: [Project!]!
+
+  """Skills and technologies in display order."""
+  skills(
+    """Return only the skills of this category."""
+    category: SkillCategory
+  ): [Skill!]!
+
+  """Preferred working arrangement, e.g. "Full-time, remote"."""
+  workSetup: String
+}
+
+"""A link to a professional resource of the profile owner."""
+type ProfileLink {
+  """Unique identifier of the link."""
+  id: ID!
+
+  """Human-readable caption, e.g. "GitHub"."""
+  label: String!
+
+  """Kind of resource the link points to."""
+  type: LinkType!
+
+  """Absolute URL of the resource."""
+  url: String!
+}
+
+"""
+A project of the profile owner; it has a live URL, a repository URL or both.
+"""
+type Project {
+  """What the project does."""
+  description: String
+
+  """Key points of the project in display order."""
+  highlights: [String!]!
+
+  """Unique identifier of the project."""
+  id: ID!
+
+  """
+  Primary link to the project: the live project when it has one, otherwise its repository.
+  """
+  link: String!
+
+  """Project name."""
+  name: String!
+
+  """Source code repository; null when the code is not public."""
+  repositoryUrl: String
+
+  """What the owner did on the project, e.g. "backend, infrastructure"."""
+  role: String
+
+  """Technologies the project is built with."""
+  technologies: [Skill!]!
+
+  """Live project or demo; null when there is none."""
+  url: String
+
+  """Year the project was built; null when not given."""
+  year: Int
+}
+
+type Query {
+  """The business-card owner's profile."""
+  profile: Profile!
+}
+
+"""A professional skill or technology."""
+type Skill {
+  """Area the skill belongs to."""
+  category: SkillCategory!
+
+  """Unique identifier of the skill."""
+  id: ID!
+
+  """Skill name, e.g. "TypeScript"."""
+  name: String!
+}
+
+"""Area a skill belongs to."""
+enum SkillCategory {
+  """AI and LLM engineering: models, agents, speech and media generation."""
+  AI
+
+  """Backend runtime, framework or API style."""
+  BACKEND
+
+  """Database, ORM or data store."""
+  DATABASE
+
+  """Infrastructure, containers, CI/CD and operations."""
+  DEVOPS
+
+  """Frontend framework, library, styling or UI practice."""
+  FRONTEND
+
+  """Programming or query language."""
+  LANGUAGE
+
+  """Testing framework or practice."""
+  TESTING
+
+  """Development tool."""
+  TOOLS
+}
