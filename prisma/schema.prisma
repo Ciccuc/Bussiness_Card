@@ -1,0 +1,134 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id          String        @id @default(uuid()) @db.Uuid
+  slug        String        @unique
+  name        String
+  headline    String
+  description String
+  location    String?
+  languages   String[]      @default([])
+  workSetup   String?       @map("work_setup")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  links       ProfileLink[]
+  skills      Skill[]
+  experiences Experience[]
+  education   Education[]
+  projects    Project[]
+
+  @@map("profiles")
+}
+
+enum LinkType {
+  GITHUB
+  LINKEDIN
+  TELEGRAM
+  EMAIL
+  WEBSITE
+  OTHER
+
+  @@map("link_type")
+}
+
+model ProfileLink {
+  id        String   @id @default(uuid()) @db.Uuid
+  profileId String   @map("profile_id") @db.Uuid
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  type      LinkType
+  label     String
+  url       String
+  sortOrder Int      @map("sort_order")
+
+  @@unique([profileId, url])
+  @@index([profileId, sortOrder])
+  @@map("profile_links")
+}
+
+enum SkillCategory {
+  LANGUAGE
+  FRONTEND
+  BACKEND
+  DATABASE
+  AI
+  DEVOPS
+  TESTING
+  TOOLS
+
+  @@map("skill_category")
+}
+
+model Skill {
+  id          String        @id @default(uuid()) @db.Uuid
+  profileId   String        @map("profile_id") @db.Uuid
+  profile     Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name        String
+  category    SkillCategory
+  sortOrder   Int           @map("sort_order")
+  experiences Experience[]  @relation("ExperienceTechnologies")
+  projects    Project[]     @relation("ProjectTechnologies")
+
+  @@unique([profileId, name])
+  @@index([profileId, sortOrder])
+  @@map("skills")
+}
+
+model Experience {
+  id           String    @id @default(uuid()) @db.Uuid
+  profileId    String    @map("profile_id") @db.Uuid
+  profile      Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  company      String
+  position     String
+  location     String?
+  description  String?
+  startDate    DateTime  @map("start_date") @db.Date
+  endDate      DateTime? @map("end_date") @db.Date
+  achievements String[]
+  technologies Skill[]   @relation("ExperienceTechnologies")
+
+  @@index([profileId, startDate])
+  @@map("experiences")
+}
+
+model Education {
+  id             String  @id @default(uuid()) @db.Uuid
+  profileId      String  @map("profile_id") @db.Uuid
+  profile        Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  degree         String
+  fieldOfStudy   String  @map("field_of_study")
+  institution    String
+  faculty        String?
+  location       String?
+  graduationYear Int     @map("graduation_year")
+
+  @@index([profileId, graduationYear])
+  @@map("education")
+}
+
+model Project {
+  id            String   @id @default(uuid()) @db.Uuid
+  profileId     String   @map("profile_id") @db.Uuid
+  profile       Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  highlights    String[] @default([])
+  role          String?
+  year          Int?
+  url           String?
+  repositoryUrl String?  @map("repository_url")
+  sortOrder     Int      @map("sort_order")
+  technologies  Skill[]  @relation("ProjectTechnologies")
+
+  @@unique([profileId, name])
+  @@index([profileId, sortOrder])
+  @@map("projects")
+}
